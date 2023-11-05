@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/david_augusto/Documentos/GitHub/UEA_AED_2/TESTES",
-      "program": "/home/david_augusto/Documentos/GitHub/UEA_AED_2/TESTES/build/Debug/outDebug",
+      "cwd": "/home/david_augusto/Documentos/GitHub/UEA_AED_2/RevisãoTemplates/LSE",
+      "program": "/home/david_augusto/Documentos/GitHub/UEA_AED_2/RevisãoTemplates/LSE/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
