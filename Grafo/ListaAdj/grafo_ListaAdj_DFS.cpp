@@ -7,10 +7,16 @@ using namespace std;
 typedef unsigned int Vertex;
 
 class ItemVertex{
+//Cores:
+//    0: branco
+//    1: cinza
+//    2: preto
 public:
     unsigned int value;
+    unsigned int color;
+    ItemVertex* predec;
     ItemVertex() {};
-    ItemVertex(unsigned int value) : value(value){}
+    ItemVertex(unsigned int value) : value(value), color(0){predec = nullptr;}
 };
 
 template<typename T>
@@ -86,7 +92,10 @@ void display_list(list<T> lst){ // ItemVertex item_vertex : lst
 
 template <typename T>
 void dsf(Graph<T> &g){
-    
+    for (ItemVertex u:g.adj){
+        u.color = 0;
+        u.predec = nullptr;
+    }
 }
 
 int main(){
