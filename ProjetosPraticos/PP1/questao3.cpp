@@ -54,8 +54,8 @@ bool search_element_in_list(std::list<WeightVertexPair> lst, WeightVertexPair fl
 }
 
 void WeightedGraphAL::add_edge(Vertex u, Vertex v, Weight w){
-    WeightVertexPair v_vertex{u, w};
-    WeightVertexPair u_vertex{v, w};
+    WeightVertexPair v_vertex{v, w};
+    WeightVertexPair u_vertex{u, w};
 
     if (!search_element_in_list(adj[v], u_vertex) && 
         !search_element_in_list(adj[u], v_vertex)){
@@ -73,6 +73,10 @@ void display_list(std::list<WeightVertexPair> lst){
 }
 
 void display_graph(WeightedGraphAL &g){
+
+    std::cout << "num_verices:" << g.get_num_vertices() <<std::endl;
+    std::cout << "num_edges:" << g.get_num_edges() << std::endl;
+
     for(int i=0; i<g.get_num_vertices(); i++){
         std::cout << "v[" << i << "] :"; 
         display_list(g.get_adj(i));
@@ -91,7 +95,7 @@ int main(int argc, const char* argv[]){
 
     //adicionando arestas ao grafo
     for(int i=2; i<edges*3; i+=3){
-        g.add_edge(input[i+1], input[i], input[i+2]);
+        g.add_edge(input[i], input[i+1], input[i+2]);
     }
 
     display_graph(g);
