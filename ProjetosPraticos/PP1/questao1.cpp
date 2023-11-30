@@ -79,7 +79,7 @@ void display_graph(GraphAL &g){
     std::cout << "num_edges: " << g.get_num_edges() << std::endl;
 
     for(auto i=0; i<g.get_num_vertices(); i++){
-        std::cout << "v[" << i << "]: ";
+        std::cout << i <<": ";
         std::list<Vertex> l_adj = g.get_adj(i);
         display_list(l_adj);
     }

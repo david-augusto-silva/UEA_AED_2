@@ -4,14 +4,13 @@
 #include <list>
 #include <cmath>
 
-// Entrada: 7 12 0 1 1.5 0 2 0.4 0 3 1.3 1 2 -2.5 1 4 1.4 3 2 3.1 3 6 1.3 2 4 -1.9 2 5 0.6 2 6 10.0 4 5 1.7 6 5 -2.8
-
+// Entrada: 4 7 0 1 -1.0 1 0 3.1 1 2 1.2 0 2 -1.0 0 3 0.0 3 0 1.4 3 2 6.4
 
 
 typedef unsigned int Vertex;
 typedef float Weight;
 
-class WeightedGraphAM{
+class WeightedDigraphAM{
 private:
     unsigned int num_vertices;
     unsigned int num_edges;
@@ -22,24 +21,26 @@ public:
     Weight get_weight_edge(Vertex u, Vertex v){return adj[u][v];}
     
     std::list<Vertex> get_adj(Vertex );
-    WeightedGraphAM(unsigned int);
-    ~WeightedGraphAM();
+    WeightedDigraphAM(unsigned int);
+    ~WeightedDigraphAM();
     void add_edge(Vertex, Vertex, Weight);
     void remove_edge(Vertex, Vertex);
 };
 
-WeightedGraphAM::WeightedGraphAM(unsigned int num_vertices): num_vertices(num_vertices), 
+WeightedDigraphAM::WeightedDigraphAM(unsigned int num_vertices): num_vertices(num_vertices), 
                                                              num_edges(0){
-    adj = new Weight*[num_vertices];
-    for (int i=0; i<num_vertices; i++){
-        adj[i] = new Weight[num_vertices];
-        for (int j=0; j<num_vertices; j++){
+    unsigned int LINES = num_vertices;
+    unsigned int COLUMNS = num_vertices;
+    adj = new Weight*[LINES];
+    for (int i=0; i<LINES; i++){
+        adj[i] = new Weight[COLUMNS];
+        for (int j=0; j<COLUMNS; j++){
             adj[i][j] = INFINITY;
         }
     }
 }
 
-WeightedGraphAM::~WeightedGraphAM(){
+WeightedDigraphAM::~WeightedDigraphAM(){
     for(int i=0; i<num_vertices; i++){
         delete[] adj[i];
     }
@@ -47,19 +48,17 @@ WeightedGraphAM::~WeightedGraphAM(){
     num_vertices = num_edges = 0;
 }
 
-void WeightedGraphAM::add_edge(Vertex u, Vertex v, Weight w){
+void WeightedDigraphAM::add_edge(Vertex u, Vertex v, Weight w){
     adj[u][v] = w;
-    adj[v][u] = w;
     num_edges++;
 }
 
-void WeightedGraphAM::remove_edge(Vertex u, Vertex v){
+void WeightedDigraphAM::remove_edge(Vertex u, Vertex v){
     adj[u][v] = INFINITY;
-    adj[v][u] = INFINITY;
     num_edges--;
 }
 
-std::list<Vertex> WeightedGraphAM::get_adj(Vertex v){
+std::list<Vertex> WeightedDigraphAM::get_adj(Vertex v){
     std::list<Vertex> return_adj{};
     for (unsigned int i=0; i<num_vertices; i++){
         if(!isinff(adj[i][v])){
@@ -69,7 +68,7 @@ std::list<Vertex> WeightedGraphAM::get_adj(Vertex v){
     return return_adj;
 }
 
-void display_graph(WeightedGraphAM &g){
+void display_graph(WeightedDigraphAM &g){
     std::cout << "num_vertices:" << g.get_num_vertices() << std::endl;
     std::cout << "num_edges:" << g.get_num_edges() << std::endl;
     for (int u=0; u<g.get_num_vertices(); u++){
@@ -91,7 +90,7 @@ int main(int argc, const char* argv[]){
     unsigned int vertices = input[0],
                  edges = input[1];
 
-    WeightedGraphAM g{vertices};
+    WeightedDigraphAM g{vertices};
 
     for (int i=2; i<=edges*3; i+=3){
         g.add_edge(input[i], input[i+1], input[i+2]);

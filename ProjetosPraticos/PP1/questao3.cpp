@@ -3,6 +3,8 @@
 #include <vector>
 #include <list>
 
+// 7 12 0 1 1.5 0 2 0.4 0 3 1.3 1 2 -2.5 1 4 1.4 3 2 3.1 3 6 1.3 2 4 -1.9 2 5 0.6 2 6 10.0 4 5 1.7 6 5 -2.8
+
 typedef unsigned int Vertex;
 typedef float Weight;
 
@@ -78,7 +80,7 @@ void display_graph(WeightedGraphAL &g){
     std::cout << "num_edges:" << g.get_num_edges() << std::endl;
 
     for(int i=0; i<g.get_num_vertices(); i++){
-        std::cout << "v[" << i << "] :"; 
+        std::cout << i << ": "; 
         display_list(g.get_adj(i));
     }
 }
