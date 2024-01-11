@@ -13,6 +13,7 @@ public:
     DigraphAL(unsigned int);
     ~DigraphAL();
     void add_edge(Vertex, Vertex);
+    void remove_edge(Vertex, Vertex);
     unsigned int get_num_vertices(){return num_vertices;}
     unsigned int get_num_edges(){return num_edges;}
     std::list<Vertex> get_adj(Vertex v){return adj[v];}
@@ -43,6 +44,13 @@ void DigraphAL::add_edge(Vertex u, Vertex v){
     if (!search_element_in_list(adj[u], v)){
         adj[u].push_back(v);
         num_edges++;
+    }
+}
+
+void DigraphAL::remove_edge(Vertex u, Vertex v){
+    if (search_element_in_list(adj[u], v)){
+        adj[u].remove(v);
+        num_edges--;
     }
 }
 

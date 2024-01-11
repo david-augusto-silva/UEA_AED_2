@@ -48,9 +48,10 @@ WeightedGraphAM::~WeightedGraphAM(){
 }
 
 void WeightedGraphAM::add_edge(Vertex u, Vertex v, Weight w){
-    adj[u][v] = w;
-    adj[v][u] = w;
-    num_edges++;
+    if (adj[u][v] == INFINITY && adj[v][u] == INFINITY)
+        adj[u][v] = w;
+        adj[v][u] = w;
+        num_edges++;
 }
 
 void WeightedGraphAM::remove_edge(Vertex u, Vertex v){

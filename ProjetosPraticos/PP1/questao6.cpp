@@ -39,8 +39,9 @@ DigraphAM::~DigraphAM(){
 }
 
 void DigraphAM::add_edge(Vertex u, Vertex v, Weight w){
-    adj[u][v] = w;
-    num_edges++;
+    if (adj[u][v] == 0)
+        adj[u][v] = w;
+        num_edges++;
 }
 
 void DigraphAM::remove_edge(Vertex u, Vertex v){

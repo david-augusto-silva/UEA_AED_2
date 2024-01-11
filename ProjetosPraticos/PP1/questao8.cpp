@@ -49,8 +49,9 @@ WeightedDigraphAM::~WeightedDigraphAM(){
 }
 
 void WeightedDigraphAM::add_edge(Vertex u, Vertex v, Weight w){
-    adj[u][v] = w;
-    num_edges++;
+    if(adj[u][v]==INFINITY)
+        adj[u][v] = w;
+        num_edges++;
 }
 
 void WeightedDigraphAM::remove_edge(Vertex u, Vertex v){

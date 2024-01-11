@@ -61,7 +61,7 @@ void WeightedDigraphAL::add_edge(Vertex u, Vertex v, Weight w){
 }
 
 void WeightedDigraphAL::remove_edge(Vertex u, Vertex v){
-    //   
+    
 }
 
 void display_list(std::list<VertexWeightPair> lst){

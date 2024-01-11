@@ -67,6 +67,11 @@ void WeightedGraphAL::add_edge(Vertex u, Vertex v, Weight w){
     }
 }
 
+void WeightedGraphAL::remove_edge(Vertex u, Vertex v){
+               
+}
+
+
 void display_list(std::list<WeightVertexPair> lst){
     for (auto elem: lst){
         std::cout << "(" << elem.vertex << ", " << elem.weight << "), ";
