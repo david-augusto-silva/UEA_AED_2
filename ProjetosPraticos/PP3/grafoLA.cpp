@@ -3,9 +3,21 @@
 #include <vector>
 #include <limits>
 
+template <typename It,typename T>
+void my_iota(It begin, It end, T val){
+    while (begin != end){
+        *begin = val;
+        ++begin;
+        ++end;
+    }
+}
 
 typedef float Weight;
 typedef unsigned int Vertex;
+
+class MinPriorityQueue;
+class MinBinHeap;
+class UnionFind;
 
 class wVertex{
 public:
@@ -14,19 +26,16 @@ public:
     wVertex(Vertex v, Weight w):v(v), w(w){}
 };
 
-class MinPriorityQueue;
-class MinBinHeap;
-
-class GraphV{
+class SubGraph{
 private:
     unsigned int num_vertices;
     unsigned int num_edges;
     std::list<wVertex> *adj;
 public:
-    GraphV(unsigned int num_vertices):num_vertices(num_vertices), num_edges(0){
+    SubGraph(unsigned int num_vertices, unsigned int num_edges):num_vertices(num_vertices), num_edges(num_edges){
         adj = new std::list<wVertex>[num_vertices];
     }
-    GraphV(){
+    ~SubGraph(){
     for (int i=0; i < num_vertices; i++){
         adj[i].clear();
     }
@@ -40,17 +49,15 @@ public:
         wVertex new_vertex{v, w};
 
         adj[u].push_back(new_vertex);
-    }
-    bool remove_edge(Vertex u, Vertex v){
-        for (auto elem:adj[u]){
-            if (elem.v == v){
-                adj[u].remove(elem);
-                return true;
-            }
-        }
-        return false;
+        num_edges++;
     }
     
+    unsigned int set_num_vertices(unsigned int v){
+        num_vertices = v;
+    }
+    unsigned int set_num_edges(unsigned int e){
+        num_edges = e;
+    }
     unsigned int get_num_edges(){
         return num_edges;
     }
@@ -62,6 +69,60 @@ public:
     }
 
     std::vector<Weight> dijkstra(Vertex source);
+    std::list<wVertex> SubGraph::kruskal();
+};
+
+
+class GraphV{
+private:
+    unsigned int num_vertices;
+    unsigned int num_edges;
+    std::list<std::pair<wVertex, SubGraph>> *adj;
+public:
+    GraphV(unsigned int num_vertices, unsigned int num_edges):num_vertices(num_vertices), num_edges(num_edges){
+        adj = new std::list<std::pair<wVertex, SubGraph>>[num_vertices];
+    }
+    ~GraphV(){
+        for(int i=0; i<num_vertices; i++){
+            adj[i].clear();
+        }
+
+        delete[] adj;
+
+        num_vertices = num_edges = 0;
+    }
+    void add_edge(Vertex u, Vertex v, Weight w){
+        wVertex edge_uv{v, w};
+        SubGraph g{0, 0};
+        std::pair<wVertex, SubGraph> p{edge_uv, g};
+        adj[u].push_back(p);
+    }
+    void create_subgraph(Vertex v, unsigned int num_vertices, unsigned int num_edges){
+        (adj[v].begin())->second.set_num_vertices(num_vertices);
+        (adj[v].begin())->second.set_num_edges(num_edges);
+    }
+    
+    std::vector<Weight> dijkstra(Vertex source){
+        std::vector<Weight> dist(num_vertices, std::numeric_limits<Weight>::infinity());
+        dist[source] = 0;
+
+        PriorityQueue pq;
+        pq.enqueue(source);
+        while (!pq.is_empty()){
+            Vertex u = pq.dequeue();
+
+            for (auto& neighbor:adj[u]){
+                Vertex v = neighbor.first.v;
+                Weight w = neighbor.first.w;
+
+                if(dist[u]+w < dist[v]){
+                    dist[v] = dist[u] + w;
+                    pq.enqueue(v);
+                }
+            }
+        }
+    }
+
 };
 
 class MinBinHeap{
@@ -130,7 +191,34 @@ public:
     }
 };
 
-std::vector<Weight> GraphV::dijkstra(Vertex source){
+class UnionFind{
+private:
+    std::vector<int> parent;
+public:
+    UnionFind(int n){
+        parent.resize(n);
+        my_iota(parent.begin(), parent.end(), 0);
+    }
+
+    int find(int x){
+        if (parent[x] != x){
+            parent[x] = find(parent[x]);
+        }
+
+        return parent[x];
+    }
+
+    void unite(int x, int y){
+        int rX = find(x);
+        int rY = find(y);
+
+        if (rX != rY){
+            parent[rX] = rY;
+        }
+    }
+};
+
+std::vector<Weight> SubGraph::dijkstra(Vertex source){
     std::vector<Weight> dist(num_vertices, std::numeric_limits<Weight>::infinity());
     dist[source] = 0;
 
@@ -154,6 +242,27 @@ std::vector<Weight> GraphV::dijkstra(Vertex source){
     return dist;
 }
 
+std::list<wVertex> SubGraph::kruskal(){
+    std::list<wVertex> result;
+    UnionFind uf(num_vertices);
+
+    //vetor de arestas ordenado por peso
+    std::vector<wVertex> edges;
+    for(Vertex u=0; u < num_vertices; ++u){
+        for(auto& neighbor:adj[u]){
+            Vertex v = neighbor.v;
+            Vertex w = neighbor.w;
+            edges.push_back({v, w});
+        }
+    }
+
+    //ordenação em ordem crescente de peso
+    for (Vertex i = 0; i < num_vertices - 1; i++){
+        for (Vertex j = 0, j < num_vertices - i - 1; j++){
+            if (adj[])
+        }
+    }
+}
 
 int main(){
 

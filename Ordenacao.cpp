@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -54,7 +55,6 @@ int part(vector<int> &input, int p, int r){
         do{j = j-1;}while(input[j]>x);
         if (i<j){
             swap(input[i], input[j]);
-            break;
         }else{
             swap(input[p], input[j]);
             input[r+1] = tmp;
@@ -73,20 +73,40 @@ void quicksort(vector<int> &input, int pivot, int r){
     }
 }
 
+void merge(vector<int> &input, int p, int q, int r){
+    int n1 = q-p+1, n2 = r-q, i, j;
+    vector<int> L(n1), R(n2);
+    
+    for(i=0; i < n1; i++){L[i] = input[p+i];}
+    for(j=0; j < n2; j++){R[j] = input[q+j+1];}
+   
+    i = 0; j = 0;
+
+    for (int k=p; k <= r; k++){
+        if (i < n1 && (j >=n2 || L[i] <= R[j])){
+            input[k] = L[i]; i++;
+        }else{
+            input[k] = R[j]; j++;
+        }
+    }
+
+}
+
+void merge_sort(vector<int> &input, int p, int r){
+    if (p < r){
+        int q = floor((p+r)/2);
+        merge_sort(input, p, q);
+        merge_sort(input, q+1, r);
+        merge(input, p, q, r);
+    }
+}
+
+
 void display_vector(vector<int> &input){
     for (int i=0; i < input.size(); i++){
         cout << input[i] << " ";
     }
     cout << endl;
-}
-
-bool find(vector<int> v, int key){
-    for(int i:v){
-        if(i == key){
-            return true;
-        }
-    }
-    return false;
 }
 
 int main(){
@@ -96,7 +116,7 @@ int main(){
     cout << "Antes da ordenação:  "; display_vector(a); 
 
     //insertion_sort(a, insertion_time);
-    quicksort(a, 0, a.size());
+    merge_sort(a, 0, a.size());
 
     cout << "Depois da ordenação: "; display_vector(a);
     return 0;
