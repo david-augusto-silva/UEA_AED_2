@@ -21,6 +21,16 @@ public:
     ItemVertex(Vertex v, Weight w): v(v), w(w){}
 };
 
+void lst_sort(std::list<ItemVertex>& lst){
+    for (auto i=lst.begin(); i!=lst.end(); ++i){
+        for(auto j=std::next(i); j!=lst.end(); ++j){
+            if(i->w > j->w){
+                std::swap(*i, *j);
+            }
+        }
+    }
+}
+
 class UnionFind{
 private:
     std::vector<int> id;
@@ -58,6 +68,7 @@ public:
     unsigned int num_sick;
     std::list<ItemVertex> *adj;
     std::vector<unsigned int> sick;
+
 public:
     NeuronBlock(unsigned int nV):
     num_vertices(nV), num_sick(0){
