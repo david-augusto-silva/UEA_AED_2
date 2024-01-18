@@ -15,7 +15,7 @@ void my_iota(It begin, It end, T val){
 typedef float Weight;
 typedef unsigned int Vertex;
 
-class MinPriorityQueue;
+class PriorityQueue;
 class MinBinHeap;
 class UnionFind;
 
@@ -30,9 +30,11 @@ class SubGraph{
 private:
     unsigned int num_vertices;
     unsigned int num_edges;
+    unsigned int num_sick;
     std::list<wVertex> *adj;
+    std::vector<Vertex> sick;
 public:
-    SubGraph(unsigned int num_vertices, unsigned int num_edges):num_vertices(num_vertices), num_edges(num_edges){
+    SubGraph(unsigned int num_vertices, unsigned int num_edges):num_vertices(num_vertices), num_edges(num_edges), num_sick(0){
         adj = new std::list<wVertex>[num_vertices];
     }
     ~SubGraph(){
@@ -52,11 +54,17 @@ public:
         num_edges++;
     }
     
-    unsigned int set_num_vertices(unsigned int v){
+    void set_num_vertices(unsigned int v){
         num_vertices = v;
     }
-    unsigned int set_num_edges(unsigned int e){
+    void set_num_edges(unsigned int e){
         num_edges = e;
+    }
+    void set_num_sick(unsigned int s){
+        num_sick=s;
+    }
+    void set_sick(Vertex v){
+        sick.push_back(v);
     }
     unsigned int get_num_edges(){
         return num_edges;
@@ -69,9 +77,8 @@ public:
     }
 
     std::vector<Weight> dijkstra(Vertex source);
-    std::list<wVertex> SubGraph::kruskal();
+    std::list<wVertex> kruskal();
 };
-
 
 class GraphV{
 private:
@@ -121,8 +128,8 @@ public:
                 }
             }
         }
+        return dist;
     }
-
 };
 
 class MinBinHeap{
@@ -218,7 +225,7 @@ public:
     }
 };
 
-std::vector<Weight> SubGraph::dijkstra(Vertex source){
+std::vector<Weight> GraphV::dijkstra(Vertex source){
     std::vector<Weight> dist(num_vertices, std::numeric_limits<Weight>::infinity());
     dist[source] = 0;
 
@@ -229,8 +236,8 @@ std::vector<Weight> SubGraph::dijkstra(Vertex source){
         Vertex u = pq.dequeue();
 
         for (auto& neighbor : adj[u]){
-            Vertex v = neighbor.v;
-            Weight w = neighbor.w;
+            Vertex v = neighbor.first.v;
+            Weight w = neighbor.first.w;
 
             if(dist[u] + w < dist[v]){
                 dist[v] = dist[u] + w;
@@ -246,27 +253,36 @@ std::list<wVertex> SubGraph::kruskal(){
     std::list<wVertex> result;
     UnionFind uf(num_vertices);
 
-    //vetor de arestas ordenado por peso
-    std::vector<wVertex> edges;
-    for(Vertex u=0; u < num_vertices; ++u){
-        for(auto& neighbor:adj[u]){
-            Vertex v = neighbor.v;
-            Vertex w = neighbor.w;
-            edges.push_back({v, w});
+    //ordenação em ordem crescente de peso
+    for (Vertex i = 0; i < num_vertices - 1; i++){
+        for (Vertex j = 0; j < num_vertices - i - 1; j++){
+            if (adj[j].front().w > adj[j+1].front().w){
+                std::swap(adj[j], adj[j+1]);
+            }
         }
     }
 
-    //ordenação em ordem crescente de peso
-    for (Vertex i = 0; i < num_vertices - 1; i++){
-        for (Vertex j = 0, j < num_vertices - i - 1; j++){
-            if (adj[])
+    //vetor de arestas ordenado por peso
+    for (Vertex u = 0; u<num_vertices; ++u){
+        for (auto& neighbor:adj[u]){
+            Vertex v = neighbor.v;
+            Weight w = neighbor.w;
+
+            if (uf.find(u) != uf.find(v)){
+                result.push_back(neighbor);
+                uf.unite(u, v);
+            }
         }
     }
+
+    return result;
 }
 
 int main(){
 
-    
+    unsigned int num_vertices, num_edges, sick;
+    std::cin >> num_vertices; std::cin >> num_edges;
 
+    std::cout << num_vertices << num_edges << std::endl;
 
 }
