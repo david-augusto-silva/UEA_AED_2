@@ -76,8 +76,8 @@ public:
     }
 
     void add_edge(unsigned int u, unsigned int v, float w){
-        ItemVertex edge_to_v{v, w};
-        adj[u].push_back(edge_to_v);
+        adj[u].emplace_back(v, w);
+        adj[v].emplace_back(u, w);
     }
 
     //retorna a soma dos pesos da mst
@@ -88,12 +88,8 @@ float NeuronBlock::kruskal(){
     std::list<ItemVertex> result;
     UnionFind uf(num_vertices);
 
-    for(Vertex i=0; i<num_vertices; i++){
-        for (Vertex j=0; j < num_vertices - i; j++){
-            if (adj[j].front().w > adj[j+1].front().w){
-                std::swap(adj[j], adj[j+1]);
-            }
-        }
+    for(Vertex v=0; v < num_vertices; v++){
+        lst_sort(adj[v]);
     }
 
     for (Vertex u = 0; u<num_vertices; ++u){
@@ -108,14 +104,13 @@ float NeuronBlock::kruskal(){
         }
     }
 
-    float sum;
+    float sum=0.0;
     for(auto v:result){
         sum += v.w;
     }
 
     return sum; 
 }
-
 
 int main(){
 
@@ -124,11 +119,11 @@ int main(){
     std::cin >> vertices >> edges;
     NeuronBlock nB{vertices};
 
-    for(int i = 0; i <= edges; i++){
-        Vertex u, v;
-        Weight w;
-        std::cin >> u >> v >> w;
+    for(int i = 0; i < edges; i++){
+        Vertex u=0, v=0;
+        Weight w = 0.0;
 
+        std::cin >> u >> v >> w;
         nB.add_edge(u, v, w);
     }
 
@@ -137,6 +132,8 @@ int main(){
     mst_sum = nB.kruskal();
 
     std::cout << "Peso da mst: " << mst_sum << std::endl;
+
+    return 0;
 }
 
 
