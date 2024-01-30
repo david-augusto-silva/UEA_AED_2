@@ -14,15 +14,23 @@ class HeapVertex;
 class MinPriorityQueueVertex;
 class UnionFind;
 
-class ItemVertex{
+class ItemEdge{
 public:
     Vertex v;
     Weight w;
-    ItemVertex(){}
-    ItemVertex(Vertex v, Weight w): v(v), w(w){}
+    ItemEdge(){}
+    ItemEdge(Vertex v, Weight w): v(v), w(w){}
 };
 
-void lst_sort(std::list<ItemVertex>& lst){
+/* int get_index(std::vector<ItemVertex> v, ItemVertex i){
+    int index = -1;
+    do{index++;}while(v[index].v == i.v && v[index].w == i.w);
+
+    return index;
+}
+ */
+
+void lst_sort(std::list<ItemEdge>& lst){
     for (auto i=lst.begin(); i!=lst.end(); ++i){
         for(auto j=std::next(i); j!=lst.end(); ++j){
             if(i->w > j->w){
@@ -34,7 +42,7 @@ void lst_sort(std::list<ItemVertex>& lst){
 
 class HeapVertex{
 private: 
-    std::vector<int> heapV;
+    std::vector<Vertex> heapV;
     int parent(int index){return index-1/2;}
     int leftC(int index){return 2*index+1;}
     int rightC(int index){return 2*index+2;}
@@ -45,7 +53,6 @@ private:
             index = parent(index);
         }
     }
-
     void minHeapfyRemove(int index){
         int l=leftC(index);
         int r = rightC(index);
@@ -64,12 +71,12 @@ private:
         }
     }
 public:
-    void insert(int key){
-        heapV.push_back(key);
-        minHeapfyInsert(key);
+    void insert(Vertex elem){
+        heapV.push_back(elem);
+        minHeapfyInsert(elem);
     }
 
-    void build_min_heapV(std::vector<int> v){
+    void build_min_heapV(std::vector<Vertex> v){
         for(auto key:v){
             insert(key);
         }
@@ -80,7 +87,7 @@ public:
             return -1;
         }
 
-        int min = heapV[0];
+        Vertex min = heapV[0];
         heapV.pop_back();
         minHeapfyRemove(0);
         return min;
@@ -95,8 +102,8 @@ class MinPriorityQueueVertex{
 private:
     HeapVertex minHeap;
 public:
-    void enqueue(int key){
-        minHeap.insert(key);
+    void enqueue(Vertex v){
+        minHeap.insert(v);
     }
     Vertex dequeue(){
         return minHeap.extractMin();
@@ -109,9 +116,8 @@ public:
 class UnionFind{
 private:
     std::vector<int> id;
-    unsigned int count;
 public:
-    UnionFind(int n): count(n){
+    UnionFind(int n){
         id.resize(n);
         for (int i=0; i<id.size(); i++){
             id[i] = i;
@@ -119,18 +125,17 @@ public:
     }
 
     int find(int p){
+        if(id[p] != p)
+            id[p] = find(id[p]);
         return id[p];
     }
 
     void unite(int p, int q){
-        int pID = find(p), qID = find(q);
+        int pID = find(p);
+        int qID = find(q);
 
-        if (pID == qID) return;
-
-        for (int i=0; i < id.size(); i++){
-            if (id[i] == pID) id[i] = qID;
-        }
-        count--;
+        if(pID != qID)
+            id[pID] = qID;
     }
 };
 
@@ -139,21 +144,28 @@ public:
     unsigned int num_vertices;
     unsigned int num_edges;
     unsigned int num_sick;
-    std::list<ItemVertex> *adj_n;
-    std::vector<unsigned int> sick;
+    std::list<ItemEdge> *adj_n;
+    std::vector<Vertex> sick;
 
 public:
-    NeuronBlock(){};
+    NeuronBlock(){
+        this->num_vertices = 0;
+        this->num_edges=0;
+        this->num_sick=0;
+    }
 
     void init(unsigned int num_vertices){
         this->num_vertices=num_vertices;
         this->num_edges=0;
-        adj_n = new std::list<ItemVertex>[num_vertices];
+        adj_n = new std::list<ItemEdge>[num_vertices];
     }
 
     void add_edge(unsigned int u, unsigned int v, float w){
-        adj_n[u].emplace_back(v, w);
-        adj_n[v].emplace_back(u, w);
+        ItemEdge uv{v, w};
+        ItemEdge vu{u, w};
+
+        adj_n[u].push_back(uv);
+        adj_n[v].push_back(vu);
     }
 
     void add_sick(Vertex v){
@@ -162,6 +174,7 @@ public:
 
     void set_num_vertices(unsigned int num_vertices){
         this->num_vertices = num_vertices;
+        adj_n = new std::list<ItemEdge>[num_vertices];
     }
 
     //retorna a soma dos pesos da mst
@@ -172,49 +185,36 @@ class Brain{
 private:
     unsigned int num_vertices;
     unsigned int num_edges;
-    std::list<std::pair<ItemVertex, NeuronBlock>> *adj_b;
-    Vertex in;
+    std::pair<std::list<ItemEdge>, NeuronBlock> *adj_b;
+    Vertex source;
     Vertex out;
 
 public:
     Brain(unsigned int num_vertices):num_vertices(num_vertices), num_edges(0){
-        adj_b = new std::list<std::pair<ItemVertex,NeuronBlock>>[num_vertices];
+        adj_b = new std::pair<std::list<ItemEdge>, NeuronBlock>[num_vertices];
     }
 
     void add_edge(Vertex u, Vertex v, Weight w){
-        ItemVertex u_to_v{v, w};
-        ItemVertex v_to_u{u, w};
-
-        auto& u_lst = adj_b[u];
-        auto& v_lst = adj_b[v];
-
-        u_lst.emplace_back(u_to_v, NeuronBlock{});
-        v_lst.emplace_back(u_to_v, NeuronBlock{});
+        ItemEdge u_to_v{v, w};
+        adj_b[u].second = NeuronBlock{};
+        adj_b[u].first.push_back(u_to_v); 
+        num_edges++;
     }
 
-    void init_neuronBlock(unsigned int num_v_neuron,Vertex u, Vertex v){
-        for(auto bv:adj_b[u]){
-            if(bv.first.v == v){
-                bv.second.set_num_vertices(num_v_neuron);
-                break;
-            }
-        }
+    void init_neuronBlock(Vertex u,unsigned int num_v_neuron){
+        adj_b[u].second.set_num_vertices(num_v_neuron);
     }
 
     void add_neuron_sick(Vertex u, Vertex sick_v){
-        adj_b[u].
+        adj_b[u].second.add_sick(sick_v);
     }
 
-    void add_neuron_edge(Vertex u1, Vertex v1, Vertex u2, Vertex v2, Weight w){
-        for(auto bv:adj_b[u1]){
-            if(bv.first.v == v1){
-                bv.second.add_edge(u2, v2, w);
-            }
-        }
+    void add_neuron_edge(Vertex u, Vertex v1, Vertex v2, Weight w){
+        adj_b[u].second.add_edge(v1, v2, w);
     }
     
     void set_in_out(Vertex i, Vertex o){
-        this->in=i;
+        this->source=i;
         this->out=o;
     }
 
@@ -223,7 +223,7 @@ public:
 };
 
 float NeuronBlock::kruskal(){
-    std::list<ItemVertex> result;
+    std::list<ItemEdge> result;
     UnionFind uf(num_vertices);
 
     for(Vertex v=0; v < num_vertices; v++){
@@ -250,68 +250,87 @@ float NeuronBlock::kruskal(){
     return sum; 
 }
 
-// Quando visita um vertice, já é calculada a MST
 float Brain::dijkstra(){
     std::vector<Weight> dist(num_vertices, std::numeric_limits<Weight>::infinity());
-    dist[in] = 0;
-
+    dist[source] = 0;
     float sum = 0.0;
 
     MinPriorityQueueVertex pq;
-    pq.enqueue(in);
+    pq.enqueue(source);
 
     while (!pq.is_empty()){
         Vertex u = pq.dequeue();
 
-        for(auto& neighbor:adj_b[u]){
-            Vertex v = neighbor.first.v;
-            Weight w = neighbor.first.w;
+        if (adj_b[u].second.sick.size() != 0)
+            sum += adj_b[u].second.kruskal();
+            std::cout << "ok K" << std::endl;
 
-            if (neighbor.second.sick.size() != 0){
-                sum += neighbor.second.kruskal();
-            }
-            
+        for(auto& neighbor:adj_b[u].first){
+            Vertex v = neighbor.v;
+            Weight w = neighbor.w;
+
             if(dist[u] + w < dist[v]){
                 dist[v] = dist[u] + w;
-                pq.enqueue(v);
+                pq.enqueue(u);
             }
-
         }
     }
 
+    std::cout << "ok D" << std::endl;
     return sum;
-
 }
 
 int main() {
     
-    unsigned int num_vertices_brain=0, num_edges_brain=0;
-    unsigned int num_vertices_nBlock=0, num_edges_nBlock=0;
-    unsigned int num_sick=0;
+    unsigned int num_vertices_brain=0, num_edges_brain=0;    
     Vertex in=0, out=0;
 
-
+    //Ordem e tamanho do grafo Brain
     std::cin >> num_vertices_brain >> num_edges_brain;
 
     Brain b{num_vertices_brain};
 
-    // Adiciona os vertices ao cérebro ("grafão")
+    // Adiciona arestas ao grafo Brain
     for (unsigned int i=0; i<num_edges_brain; i++){
         Vertex u=0, v=0;
         Weight w=0.0;
         std::cin >> u >> v >> w;
         b.add_edge(u-1, v-1, w);
     }
-
+    
     // Entrada e saída 
     std::cin >> in >> out;
     b.set_in_out(in-1, out-1);
 
+    //Blocos de Neurônios
+    for(Vertex v=0; v<num_vertices_brain; v++){
+        unsigned int num_vertices_nBlock=0, num_edges_nBlock=0;
+        unsigned int num_sick=0;
 
-    std::cin >> num_vertices_nBlock >> num_edges_nBlock;
+        std::cin >> num_vertices_nBlock >> num_edges_nBlock;
+        b.init_neuronBlock(v, num_vertices_nBlock);
 
-    std::cin >> num_sick;
-    if(num_sick != 0){
-        for 
+        std::cin >> num_sick;
+        if(num_sick != 0){
+            for (unsigned int j=0; j < num_sick; j++){
+                Vertex sick_v = 0;
+                std::cin >> sick_v;
+                b.add_neuron_sick(v, sick_v-1);
+            }
+        }
+
+        for(unsigned int i=0; i<num_edges_nBlock; i++){
+            Vertex ub=0, vb=0;
+            Weight wb=0.0;
+
+            std::cin >> ub >> vb >> wb;
+            b.add_neuron_edge(v, ub-1, vb-1, wb);
+        }
     }
+
+    float result = 0.0;
+
+    //Cálculo da MST
+    result = b.dijkstra();
+    std::cout << result << std::endl;
 }

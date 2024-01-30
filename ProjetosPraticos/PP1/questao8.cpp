@@ -49,14 +49,17 @@ WeightedDigraphAM::~WeightedDigraphAM(){
 }
 
 void WeightedDigraphAM::add_edge(Vertex u, Vertex v, Weight w){
-    if(adj[u][v]==INFINITY)
+    if(adj[u][v]==INFINITY && u != v){
         adj[u][v] = w;
         num_edges++;
+    }
 }
 
 void WeightedDigraphAM::remove_edge(Vertex u, Vertex v){
-    adj[u][v] = INFINITY;
-    num_edges--;
+    if(((u < num_vertices) && (v < num_vertices)) && !isinff(adj[u][v])){
+        adj[u][v] = INFINITY;
+        num_edges--;
+    }
 }
 
 std::list<Vertex> WeightedDigraphAM::get_adj(Vertex v){
@@ -80,23 +83,25 @@ void display_graph(WeightedDigraphAM &g){
     }
 }
 
-int main(int argc, const char* argv[]){
+int main(){
 
-    std::vector<float> input{};
+    unsigned int num_vertices = 0, num_edges=0;
 
-    for(int i=1; i<argc; i++){
-        input.push_back(atof(argv[i]));
-    }
+    std::cin >> num_vertices;
+    std::cin >> num_edges;
 
-    unsigned int vertices = input[0],
-                 edges = input[1];
+    WeightedDigraphAM g{num_vertices};
 
-    WeightedDigraphAM g{vertices};
-
-    for (int i=2; i<=edges*3; i+=3){
-        g.add_edge(input[i], input[i+1], input[i+2]);
+    for(unsigned int i=0; i < num_edges; i++){
+        Vertex u=0, v=0;
+        Weight w=0.0;
+        std::cin >> u;
+        std::cin >> v;
+        std::cin >> w;
+        g.add_edge(u, v, w);
     }
 
     display_graph(g);
 
+    return 0;
 }

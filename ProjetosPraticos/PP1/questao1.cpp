@@ -34,7 +34,7 @@ GraphAL::GraphAL(unsigned int num_vertices):num_vertices(num_vertices),
 }
 
 GraphAL::~GraphAL(){
-    for(int i=0; i<num_vertices; i++){
+    for(unsigned int i=0; i<num_vertices; i++){
         adj[i].clear();
     }
     delete[] adj;
@@ -52,9 +52,13 @@ bool find_element(std::list<T> lst, T flag){
 }
 
 void GraphAL::add_edge(Vertex u, Vertex v){
-    adj[u].push_back(v);
-    adj[v].push_back(u);
-    num_edges++;
+    if (!find_element(adj[u], v) || !find_element(adj[v], u)){
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+        num_edges++;
+    }else{
+        return;
+    }
 }
 
 void GraphAL::remove_edge(Vertex u, Vertex v){
@@ -78,7 +82,7 @@ void display_graph(GraphAL &g){
     std::cout << "num_vertices: " << g.get_num_vertices() << std::endl;
     std::cout << "num_edges: " << g.get_num_edges() << std::endl;
 
-    for(auto i=0; i<g.get_num_vertices(); i++){
+    for(unsigned int i=0; i<g.get_num_vertices(); i++){
         std::cout << i <<": ";
         std::list<Vertex> l_adj = g.get_adj(i);
         display_list(l_adj);
@@ -87,19 +91,20 @@ void display_graph(GraphAL &g){
 
 
 
-int main(int argc, const char *argv[]){
+int main(){
 
-    std::vector<unsigned int> input{};
+    unsigned int num_vertices = 0, num_edges=0;
 
-    for (auto i=1; i<argc; i++){
-        input.push_back(atoi(argv[i]));
-    }
-    unsigned int num_vertices = input[0], num_edges = input[1];
+    std::cin >> num_vertices;
+    std::cin >> num_edges;
 
     GraphAL g{num_vertices};
 
-    for (auto i=2; i<=num_edges*2; i+=2){
-        g.add_edge(input[i], input[i+1]);
+    for(unsigned int i=0; i < num_edges; i++){
+        Vertex u=0, v=0;
+        std::cin >> u;
+        std::cin >> v;
+        g.add_edge(u, v);
     }
 
     display_graph(g);

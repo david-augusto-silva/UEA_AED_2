@@ -25,7 +25,7 @@ DigraphAL::DigraphAL(unsigned int num_vertices): num_vertices(num_vertices),
 }
 
 DigraphAL::~DigraphAL(){
-    for(int i=0; i<num_vertices; i++){
+    for(unsigned int i=0; i<num_vertices; i++){
         adj[i].clear();
     }
 
@@ -41,10 +41,12 @@ bool search_element_in_list(std::list<Vertex> lst, Vertex flag){
 }
 
 void DigraphAL::add_edge(Vertex u, Vertex v){
-    if (!search_element_in_list(adj[u], v)){
+    if (!search_element_in_list(adj[u], v) && u != v){
         adj[u].push_back(v);
         num_edges++;
+        return;
     }
+    return;
 }
 
 void DigraphAL::remove_edge(Vertex u, Vertex v){
@@ -61,7 +63,7 @@ void display_list(std::list<Vertex> lst){
     std::cout << std::endl;
 }
 
-void display_Graph(DigraphAL &g){
+void display_graph(DigraphAL &g){
 
     std::cout << "num_vertices:" << g.get_num_vertices() << std::endl;
     std::cout << "num_edges:" << g.get_num_edges() << std::endl;
@@ -71,22 +73,22 @@ void display_Graph(DigraphAL &g){
     }
 }
 
-int main(int argc, const char* argv[]){
-    std::vector<int> input{};
-    
-    for (int i=1; i<argc; i++){
-        input.push_back(atoi(argv[i]));
+int main(){
+
+    unsigned int num_vertices = 0, num_edges=0;
+
+    std::cin >> num_vertices;
+    std::cin >> num_edges;
+
+    DigraphAL g{num_vertices};
+
+    for(unsigned int i=0; i < num_edges; i++){
+        Vertex u=0, v=0;
+        std::cin >> u;
+        std::cin >> v;
+        g.add_edge(u, v);
     }
 
-    unsigned int numVertices = input[0], numEdges = input[1];
-
-    DigraphAL g{numVertices};
-
-    for (int i=2; i <= numEdges*2; i+=2){
-        g.add_edge(input[i], input[i+1]);
-        
-    }
-
-    display_Graph(g);
+    display_graph(g);
 
 }

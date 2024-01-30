@@ -6,7 +6,7 @@ using namespace std;
 
 typedef unsigned int Vertex;
 
-class ItemVertex{
+class ItemEdge{
 //Cores:
 //    0: branco
 //    1: cinza
@@ -14,9 +14,9 @@ class ItemVertex{
 public:
     unsigned int value;
     unsigned int color;
-    ItemVertex* predec;
-    ItemVertex() {};
-    ItemVertex(unsigned int value) : value(value), color(0){predec = nullptr;}
+    ItemEdge* predec;
+    ItemEdge() {};
+    ItemEdge(unsigned int value) : value(value), color(0){predec = nullptr;}
 };
 
 template<typename T>
@@ -53,8 +53,8 @@ Graph<T>::~Graph(){
 
 template <typename T>
 void Graph<T>::add_edge(Vertex u, Vertex v){
-    ItemVertex item_vetex_v{v};
-    ItemVertex item_vetex_u{u};
+    ItemEdge item_vetex_v{v};
+    ItemEdge item_vetex_u{u};
     adj[u].push_back(item_vetex_v);
     adj[v].push_back(item_vetex_u);
     num_edges++;
@@ -84,7 +84,7 @@ void display_graph(Graph<T> &g){
 
 template <typename T>
 void display_list(list<T> lst){ // ItemVertex item_vertex : lst
-    for (ItemVertex item_vertex : lst){
+    for (ItemEdge item_vertex : lst){
         cout << item_vertex.value << ", ";
     }
     cout << endl;
@@ -92,7 +92,7 @@ void display_list(list<T> lst){ // ItemVertex item_vertex : lst
 
 template <typename T>
 void dsf(Graph<T> &g){
-    for (ItemVertex u:g.adj){
+    for (ItemEdge u:g.adj){
         u.color = 0;
         u.predec = nullptr;
     }
@@ -106,7 +106,7 @@ int main(){
     cout << "num_vertices: " << vertices << endl;
     cout << "num_edges: " << edges << endl;
     
-    Graph<ItemVertex> g{vertices};
+    Graph<ItemEdge> g{vertices};
     input_graph(g, edges);
     
     display_graph(g);

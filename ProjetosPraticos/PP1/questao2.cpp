@@ -9,10 +9,11 @@ class GraphAM{
 private:
     unsigned int num_vertices, num_edges;
     Weight **adj;
+    bool find_vertex(Vertex, Vertex);
 public:
     GraphAM(unsigned int);//
     ~GraphAM();//
-    void add_edge(Vertex, Vertex, Weight);//
+    void add_edge(Vertex, Vertex);//
     void remove_edge(Vertex, Vertex);//
     std::list<Vertex> get_adj(Vertex);
     unsigned int get_num_vertices(){return num_vertices;}
@@ -38,14 +39,22 @@ GraphAM::~GraphAM(){
     delete[] adj;
 }
 
-void GraphAM::add_edge(Vertex u, Vertex v, Weight w){
-    adj[u][v] = w;
-    adj[v][u] = w;
-    num_edges++;
+bool GraphAM::find_vertex(Vertex u, Vertex v){
+    if(adj[u][v] == 1 || adj[v][u] == 1){
+        return true;
+    }
+    return false;
+}
+
+void GraphAM::add_edge(Vertex u, Vertex v){
+    if (!find_vertex(u, v))
+        adj[u][v] = 1;
+        adj[v][u] = 1;
+        num_edges++;
 }
 
 void GraphAM::remove_edge(Vertex u, Vertex v){
-    if ((u < num_vertices) && (v < num_vertices) && ((adj[u][v] != 0) && (adj[u][v] != 0))){
+    if ((u < num_vertices) && (v < num_vertices) && (find_vertex(u, v))){
         adj[u][v] = 0;
         adj[v][u] = 0;
         num_edges--;
@@ -75,26 +84,26 @@ void show_adj_mat(GraphAM &g){
     std::cout << "num_vertices: " << g.get_num_vertices() << " "<< std::endl;
     std::cout << "num_edges: " << g.get_num_edges() <<" "<<std::endl;
 
-    for(auto i=0; i<g.get_num_vertices();i++){
+    for(unsigned int i=0; i<g.get_num_vertices();i++){
         display_list(g.get_adj(i));
     }
 }
 
 
-int main(int argc, const char* argv[]){
-    std::vector<unsigned int> input{};
-    for (auto i=1; i<argc; i++){
-        input.push_back(atoi(argv[i]));
-    }
+int main(){
+    unsigned int num_vertices = 0, num_edges=0;
 
-    unsigned int vertices = input[0];
-    unsigned int edges = input[1];
+    std::cin >> num_vertices;
+    std::cin >> num_edges;
 
-    GraphAM g{vertices};
-    for (int i=2; i <= edges*2; i+=2){
-        g.add_edge(input[i], input[i+1], 1);
+    GraphAM g{num_vertices};
+
+    for(unsigned int i=0; i < num_edges; i++){
+        Vertex u=0, v=0;
+        std::cin >> u;
+        std::cin >> v;
+        g.add_edge(u, v);
     }
 
     show_adj_mat(g);
-
 }

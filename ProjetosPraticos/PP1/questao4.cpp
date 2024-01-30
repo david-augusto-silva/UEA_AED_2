@@ -4,10 +4,6 @@
 #include <list>
 #include <cmath>
 
-// Entrada: 7 12 0 1 1.5 0 2 0.4 0 3 1.3 1 2 -2.5 1 4 1.4 3 2 3.1 3 6 1.3 2 4 -1.9 2 5 0.6 2 6 10.0 4 5 1.7 6 5 -2.8
-
-
-
 typedef unsigned int Vertex;
 typedef float Weight;
 
@@ -48,10 +44,11 @@ WeightedGraphAM::~WeightedGraphAM(){
 }
 
 void WeightedGraphAM::add_edge(Vertex u, Vertex v, Weight w){
-    if (adj[u][v] == INFINITY && adj[v][u] == INFINITY)
+    if (adj[u][v] == INFINITY && adj[v][u] == INFINITY){
         adj[u][v] = w;
         adj[v][u] = w;
         num_edges++;
+    }
 }
 
 void WeightedGraphAM::remove_edge(Vertex u, Vertex v){
@@ -71,8 +68,8 @@ std::list<Vertex> WeightedGraphAM::get_adj(Vertex v){
 }
 
 void display_graph(WeightedGraphAM &g){
-    std::cout << "num_vertices:" << g.get_num_vertices() << std::endl;
-    std::cout << "num_edges:" << g.get_num_edges() << std::endl;
+    std::cout << "num_vertices: " << g.get_num_vertices() << std::endl;
+    std::cout << "num_edges: " << g.get_num_edges() << std::endl;
     for (int u=0; u<g.get_num_vertices(); u++){
         for (int v=0; v<g.get_num_vertices(); v++){
             std::cout << g.get_weight_edge(u, v) << " ";
@@ -81,21 +78,22 @@ void display_graph(WeightedGraphAM &g){
     }
 }
 
-int main(int argc, const char* argv[]){
+int main(){
 
-    std::vector<float> input{};
+    unsigned int num_vertices = 0, num_edges=0;
+    
+    std::cin >> num_vertices;
+    std::cin >> num_edges;
 
-    for(int i=1; i<argc; i++){
-        input.push_back(atof(argv[i]));
-    }
+    WeightedGraphAM g{num_vertices};
 
-    unsigned int vertices = input[0],
-                 edges = input[1];
-
-    WeightedGraphAM g{vertices};
-
-    for (int i=2; i<=edges*3; i+=3){
-        g.add_edge(input[i], input[i+1], input[i+2]);
+    for(unsigned int i=0; i < num_edges; i++){
+        Vertex u=0, v=0;
+        Weight w=0.0;
+        std::cin >> u;
+        std::cin >> v;
+        std::cin >> w;
+        g.add_edge(u, v, w);
     }
 
     display_graph(g);

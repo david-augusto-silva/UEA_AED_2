@@ -3,8 +3,6 @@
 #include <vector>
 #include <list>
 
-// 7 12 0 1 1.5 0 2 0.4 0 3 1.3 1 2 -2.5 1 4 1.4 3 2 3.1 3 6 1.3 2 4 -1.9 2 5 0.6 2 6 10.0 4 5 1.7 6 5 -2.8
-
 typedef unsigned int Vertex;
 typedef float Weight;
 
@@ -46,9 +44,9 @@ WeightedGraphAL::~WeightedGraphAL(){
     num_vertices = num_edges = 0;
 }
 
-bool search_element_in_list(std::list<WeightVertexPair> lst, WeightVertexPair flag){
+bool search_element_in_list(std::list<WeightVertexPair> lst, Vertex flag){
     for(auto elem:lst){
-        if ((elem.vertex == flag.vertex) && (elem.weight == flag.weight)){
+        if ((elem.vertex == flag)){
             return true;
         }
     }
@@ -59,8 +57,8 @@ void WeightedGraphAL::add_edge(Vertex u, Vertex v, Weight w){
     WeightVertexPair v_vertex{v, w};
     WeightVertexPair u_vertex{u, w};
 
-    if (!search_element_in_list(adj[v], u_vertex) && 
-        !search_element_in_list(adj[u], v_vertex)){
+    if (!search_element_in_list(adj[v], u) || 
+        !search_element_in_list(adj[u], v)){
     adj[v].push_back(u_vertex);
     adj[u].push_back(v_vertex);
     num_edges++;
@@ -68,7 +66,7 @@ void WeightedGraphAL::add_edge(Vertex u, Vertex v, Weight w){
 }
 
 void WeightedGraphAL::remove_edge(Vertex u, Vertex v){
-               
+    
 }
 
 
@@ -81,8 +79,8 @@ void display_list(std::list<WeightVertexPair> lst){
 
 void display_graph(WeightedGraphAL &g){
 
-    std::cout << "num_verices:" << g.get_num_vertices() <<std::endl;
-    std::cout << "num_edges:" << g.get_num_edges() << std::endl;
+    std::cout << "num_vertices: " << g.get_num_vertices() <<std::endl;
+    std::cout << "num_edges: " << g.get_num_edges() << std::endl;
 
     for(int i=0; i<g.get_num_vertices(); i++){
         std::cout << i << ": "; 
@@ -90,19 +88,21 @@ void display_graph(WeightedGraphAL &g){
     }
 }
 
-int main(int argc, const char* argv[]){
-    std::vector<float> input{};
-    for (auto i=1; i<argc; i++){
-        input.push_back(atof(argv[i]));
-    }
+int main(){
+    unsigned int num_vertices = 0, num_edges=0;
+    
+    std::cin >> num_vertices;
+    std::cin >> num_edges;
 
-    unsigned int vertices = input[0], edges = input[1];
+    WeightedGraphAL g{num_vertices};
 
-    WeightedGraphAL g{vertices};
-
-    //adicionando arestas ao grafo
-    for(int i=2; i<edges*3; i+=3){
-        g.add_edge(input[i], input[i+1], input[i+2]);
+    for(unsigned int i=0; i < num_edges; i++){
+        Vertex u=0, v=0;
+        Weight w=0.0;
+        std::cin >> u;
+        std::cin >> v;
+        std::cin >> w;
+        g.add_edge(u, v, w);
     }
 
     display_graph(g);

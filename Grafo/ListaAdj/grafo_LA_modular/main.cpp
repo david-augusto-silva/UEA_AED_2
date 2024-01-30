@@ -26,7 +26,7 @@ void display_graph(Graph<T> &g){
 
 template <typename T>
 void display_list(list<T> lst){
-    for (ItemVertex v:lst){
+    for (ItemEdge v:lst){
         cout << v.get_value() << ", ";
     }
     cout << endl;
@@ -39,7 +39,7 @@ int main(){
     cout << "Vertices: " << vertices << endl;
     cout << "Edges: " << edges << endl;
 
-    Graph<ItemVertex> g{vertices};
+    Graph<ItemEdge> g{vertices};
     input_graph(g, edges);
 
     display_graph(g);

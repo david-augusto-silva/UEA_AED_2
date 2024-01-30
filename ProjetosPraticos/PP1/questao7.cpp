@@ -79,21 +79,22 @@ void display_graph(WeightedDigraphAL &g){
     }
 }
 
-int main(int argc, const char* argv[]){
-    std::vector<float> input{};
+int main(){
 
-    for (int i=1; i<argc; i++){
-        input.push_back(atof(argv[i]));
-    }
-    
-    unsigned int vertices = input[0], edges=input[1];
+    unsigned int num_vertices = 0, num_edges=0;
 
-    WeightedDigraphAL g{vertices};
-    
+    std::cin >> num_vertices;
+    std::cin >> num_edges;
 
+    WeightedDigraphAL g{num_vertices};
 
-    for (int i=2; i<edges*3; i+=3){
-        g.add_edge(input[i], input[i+1], input[i+2]);
+    for(unsigned int i=0; i < num_edges; i++){
+        Vertex u=0, v=0;
+        Weight w=0.0;
+        std::cin >> u;
+        std::cin >> v;
+        std::cin >> w;
+        g.add_edge(u, v, w);
     }
 
     display_graph(g);

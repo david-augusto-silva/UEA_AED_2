@@ -8,12 +8,12 @@ typedef unsigned int Vertex;
 
 using namespace std;
 
-class ItemVertex{
+class ItemEdge{
 private:
     unsigned int value = 0;
 public:
-    ItemVertex (){}
-    ItemVertex(unsigned int value) : value(value){}
+    ItemEdge (){}
+    ItemEdge(unsigned int value) : value(value){}
     void set_value(unsigned int v){
         value = v;
     }
@@ -54,7 +54,7 @@ Graph<T>::~Graph(){
 
 template<typename T>
 void Graph<T>::new_edge(Vertex u, Vertex v){
-    ItemVertex item_v{v}, item_u{u};
+    ItemEdge item_v{v}, item_u{u};
     adj[u].push_back(item_v);
     adj[v].push_back(item_u);
     num_edges++;

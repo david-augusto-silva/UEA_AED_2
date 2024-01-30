@@ -12,7 +12,7 @@ private:
 public:
     DigraphAM(unsigned int);//
     ~DigraphAM();//
-    void add_edge(Vertex, Vertex, Weight);//
+    void add_edge(Vertex, Vertex);//
     void remove_edge(Vertex, Vertex);//
     std::list<Vertex> get_adj(Vertex);
     unsigned int get_num_vertices(){return num_vertices;}
@@ -38,10 +38,11 @@ DigraphAM::~DigraphAM(){
     delete[] adj;
 }
 
-void DigraphAM::add_edge(Vertex u, Vertex v, Weight w){
-    if (adj[u][v] == 0)
-        adj[u][v] = w;
+void DigraphAM::add_edge(Vertex u, Vertex v){
+    if (adj[u][v] == 0 && u != v){
+        adj[u][v] = 1;
         num_edges++;
+    }
 }
 
 void DigraphAM::remove_edge(Vertex u, Vertex v){
@@ -80,18 +81,20 @@ void show_adj_mat(DigraphAM &g){
 }
 
 
-int main(int argc, const char* argv[]){
-    std::vector<unsigned int> input{};
-    for (auto i=1; i<argc; i++){
-        input.push_back(atoi(argv[i]));
-    }
+int main(){
 
-    unsigned int vertices = input[0];
-    unsigned int edges = input[1];
+    unsigned int num_vertices = 0, num_edges=0;
 
-    DigraphAM g{vertices};
-    for (int i=2; i <= edges*2; i+=2){
-        g.add_edge(input[i], input[i+1], 1);
+    std::cin >> num_vertices;
+    std::cin >> num_edges;
+
+    DigraphAM g{num_vertices};
+
+    for(unsigned int i=0; i < num_edges; i++){
+        Vertex u=0, v=0;
+        std::cin >> u;
+        std::cin >> v;
+        g.add_edge(u, v);
     }
 
     show_adj_mat(g);
