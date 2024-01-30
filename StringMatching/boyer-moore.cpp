@@ -28,9 +28,9 @@ int BoyerMoore::match(std::string text){
         m = pattern.size(),
         skip = 0;
     
-    for(int i=0; i < n-m; i+=skip){
+    for(int i=0; i <= n-m; i+=skip){
         skip = 0;
-        for(int j= m-1; m > 0; j--){
+        for(int j= m-1; j >= 0; j--){
             if(pattern[j] != text[i+j]){
                 skip = j - skip_table[text[i+j]];
                 if (skip < 1) skip = 1;
@@ -40,16 +40,4 @@ int BoyerMoore::match(std::string text){
         if (skip == 0) return i;
     }
     return -1;
-}
-
-int main(){
-
-    std::string t{"oratoroeuaroupadoreideroma"};
-    std::string p{"rato"};
-
-    BoyerMoore m{p};
-
-    std::cout << m.match(t) << "\n";
-
-    return 0;
 }
