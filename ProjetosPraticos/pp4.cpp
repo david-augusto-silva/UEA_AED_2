@@ -8,7 +8,7 @@ typedef std::string str;
 class Dict{
 private:
     std::vector<int> hash_table;
-    const int HASH_SIZE;
+    static const int HASH_SIZE = 26;
     int h_aux(int k){
         return k % HASH_SIZE;
     }
@@ -16,9 +16,7 @@ private:
         return (h_aux(k) + i) % HASH_SIZE;
     }
 public:
-    Dict(int hash_size): HASH_SIZE(hash_size){
-        hash_table.assign(HASH_SIZE, -1);
-    }
+    Dict():hash_table(HASH_SIZE, -1){}
 
     int hash_insert(int k){
         int i=0;
@@ -32,6 +30,7 @@ public:
             }
         }while(i != HASH_SIZE);
         std::cerr << "Não há mais espaço para chaves";
+        return -1;
     }
 
     int hash_search(int k){
@@ -45,6 +44,14 @@ public:
             i++;
         }while(hash_table[pos] != -1 || i != HASH_SIZE);
         return -1;
+    }
+
+    void show_hash(){
+        int i=0;
+        for(auto k:hash_table){
+            std::cout << i << ": " << k << std::endl;
+            i++;
+        }
     }
 };
 
@@ -88,4 +95,20 @@ public:
 
 int main(){
     
+    Dict d;
+
+    int i=0;
+    while(i != -1){
+        i = d.hash_insert(rand() % 100);
+    }
+
+    d.show_hash();
+    
+    int j = d.hash_search(98);
+
+    if (j == -1){
+        std::cout << "Elemento não encontrado\n";
+    }else{
+        std::cout << "Elemento encontrado na posição " << j << std::endl;
+    }
 }
