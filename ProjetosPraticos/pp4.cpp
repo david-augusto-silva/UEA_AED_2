@@ -1,28 +1,33 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <cmath>
+#include <string>
 #include <list>
-
-typedef std::string str;
 
 class Dict{
 private:
-    std::vector<int> hash_table;
+    std::vector<std::string> hash_table;
+    static const int TAM_ASCII = 256;
     static const int HASH_SIZE = 26;
-    int h_aux(int k){
-        return k % HASH_SIZE;
+    int h_aux(const std::string& k){
+        int hash = 0;
+        for (int i=0; i< k.size(); i++){
+            hash += static_cast<int>(k[i])*(int)pow(TAM_ASCII, k.size() - i - 1)%HASH_SIZE;
+        }
+        return hash % HASH_SIZE;
     }
-    int H(int k, int i){
+    int H(const std::string& k, int i){
         return (h_aux(k) + i) % HASH_SIZE;
     }
 public:
-    Dict():hash_table(HASH_SIZE, -1){}
+    Dict():hash_table(HASH_SIZE, ""){}
 
-    int hash_insert(int k){
+    int hash_insert(const std::string& k){
         int i=0;
         do{
             int pos = H(k, i);
-            if (hash_table[pos] == -1){
+            if (hash_table[pos].empty()){
                 hash_table[pos] = k;
                 return pos;
             }else{
@@ -33,7 +38,7 @@ public:
         return -1;
     }
 
-    int hash_search(int k){
+    int hash_search(const std::string& k){
         int i=0;
         int pos=0;
         do{
@@ -42,7 +47,7 @@ public:
                 return pos;
             }
             i++;
-        }while(hash_table[pos] != -1 || i != HASH_SIZE);
+        }while(!hash_table[pos].empty() || i != HASH_SIZE);
         return -1;
     }
 
@@ -57,10 +62,10 @@ public:
 
 class BoyerMoore{
 private:
-    str pattern;
+    std::string pattern;
     std::vector<int> skip_table;
 public:
-    BoyerMoore(str pattern):pattern(pattern){
+    BoyerMoore(std::string pattern):pattern(pattern){
         int m = pattern.size();
         skip_table.assign(256, -1);
         
@@ -69,7 +74,7 @@ public:
         }
     }
 
-    int match(str text){
+    int match(std::string text){
         int n = text.size();
         int m = pattern.size();
         int skip = 0;
@@ -94,21 +99,15 @@ public:
 };
 
 int main(){
-    
     Dict d;
+    char i = 'a';
+    do{
+        std::string s = "";
+        d.hash_insert(s+i);
+        i++;
+    }while(i != 'z'+1);
 
-    int i=0;
-    while(i != -1){
-        i = d.hash_insert(rand() % 100);
-    }
 
     d.show_hash();
-    
-    int j = d.hash_search(98);
 
-    if (j == -1){
-        std::cout << "Elemento não encontrado\n";
-    }else{
-        std::cout << "Elemento encontrado na posição " << j << std::endl;
-    }
 }
