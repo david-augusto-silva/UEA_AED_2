@@ -7,7 +7,7 @@
 
 class Dict{
 private:
-    std::vector<std::string> hash_table;
+    std::vector<std::pair<std::string, std::string>> hash_table;
     static const int TAM_ASCII = 256;
     static const int HASH_SIZE = 26;
     int h_aux(const std::string& k){
@@ -21,14 +21,15 @@ private:
         return (h_aux(k) + i) % HASH_SIZE;
     }
 public:
-    Dict():hash_table(HASH_SIZE, ""){}
+    Dict():hash_table(HASH_SIZE,{"", ""}){}
 
-    int hash_insert(const std::string& k){
+    int hash_insert(const std::string& key, const std::string& value){
         int i=0;
         do{
-            int pos = H(k, i);
-            if (hash_table[pos].empty()){
-                hash_table[pos] = k;
+            int pos = H(key, i);
+            if (hash_table[pos].first.empty() && hash_table[pos].second.empty()){
+                hash_table[pos].first = key;
+                hash_table[pos].second = value;
                 return pos;
             }else{
                 i++;
@@ -43,18 +44,27 @@ public:
         int pos=0;
         do{
             pos = H(k, i);
-            if(hash_table[pos] == k){
+            if(hash_table[pos].first == k){
                 return pos;
             }
             i++;
-        }while(!hash_table[pos].empty() || i != HASH_SIZE);
+        }while((!hash_table[pos].first.empty() && !hash_table[pos].second.empty()) || i != HASH_SIZE);
         return -1;
+    }
+
+    std::string hash_value_search(const std::string& value){
+        for(auto p:hash_table){
+            if(p.second == value){
+                return p.first;
+            }
+        }
+        return "";
     }
 
     void show_hash(){
         int i=0;
-        for(auto k:hash_table){
-            std::cout << i << ": " << k << std::endl;
+        for(auto p:hash_table){
+            std::cout << i << ": " << "<" << p.first << " , " << p.second << ">" << std::endl;
             i++;
         }
     }
@@ -98,16 +108,84 @@ public:
     }
 };
 
+void decipher(std::string &s){
+    char c = '\0';
+    for(size_t i=0; i<s.size(); i++){
+        char c = s[i];
+        
+        if((s[i] >= 'a' && s[i] <= 'z') && (s[i] != 20 && s[i] != 46)){
+            c = s[i] - 3;
+            if(c < 'a'){
+                c += ('a' - 3);
+            }
+            s[i] = c;
+        }         
+    } 
+}
+
+
 int main(){
+    
+    std::string artefact;
+    std::string translated;
+    std::string deciphered;
+    std::vector<std::string> patterns;
+
     Dict d;
-    char i = 'a';
-    do{
-        std::string s = "";
-        d.hash_insert(s+i);
-        i++;
-    }while(i != 'z'+1);
+    {
+    d.hash_insert("a", ":::");
+    d.hash_insert("b", ".::");
+    d.hash_insert("c", ":.:");
+    d.hash_insert("d", "::.");
+    d.hash_insert("e", ":..");
+    d.hash_insert("f", ".:.");
+    d.hash_insert("g", "..:");
+    d.hash_insert("h", "...");
+    d.hash_insert("i", "|::");
+    d.hash_insert("j", ":|:");
+    d.hash_insert("k", "::|");
+    d.hash_insert("l", "|.:");
+    d.hash_insert("m", ".|:");
+    d.hash_insert("n", ".:|");
+    d.hash_insert("o", "|:.");
+    d.hash_insert("p", ":|.");
+    d.hash_insert("q", ":.|");
+    d.hash_insert("r", "|..");
+    d.hash_insert("s", ".|.");
+    d.hash_insert("t", "..|");
+    d.hash_insert("u", ".||");
+    d.hash_insert("v", "|.|");
+    d.hash_insert("w", "||.");
+    d.hash_insert("x", "-.-");
+    d.hash_insert("y", ".--");
+    d.hash_insert("z", "--.");
+    }
 
+    std::cin >> artefact;
 
-    d.show_hash();
+    std::string aux;
+    while(true){
+        std::cin >> aux;
+        if(aux == "fim") break;
+        patterns.push_back(aux);
+    }
+
+    //std::cout << artefact << std::endl;
+    //TRADUÇÃO
+    for(int i=0; i<artefact.size(); i+=3){
+        aux = "";
+        aux = artefact.substr(i, 3);
+        if(aux == "---"){
+            translated.append(" ");
+        }else if(aux == "~~~"){
+            translated.append(".");
+        }else{
+            translated.append(d.hash_value_search(aux));
+        }
+    }
+
+    decipher(translated);
+
+    std::cout << translated << std::endl;
 
 }
