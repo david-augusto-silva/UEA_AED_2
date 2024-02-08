@@ -111,18 +111,19 @@ public:
 void decipher(std::string &s){
     char c = '\0';
     for(size_t i=0; i<s.size(); i++){
-        char c = s[i];
+        c = s[i];
         
         if((s[i] >= 'a' && s[i] <= 'z') && (s[i] != 20 && s[i] != 46)){
-            c = s[i] - 3;
-            if(c < 'a'){
-                c += ('a' - 3);
+            if (c < 'd'){
+                c = 123 + (s[i]-'a') - 3;
+            }else{
+                c = s[i] - 3;
             }
+            
             s[i] = c;
         }         
     } 
 }
-
 
 int main(){
     
@@ -172,7 +173,7 @@ int main(){
 
     //std::cout << artefact << std::endl;
     //TRADUÇÃO
-    for(int i=0; i<artefact.size(); i+=3){
+    for(size_t i=0; i < artefact.size(); i+=3){
         aux = "";
         aux = artefact.substr(i, 3);
         if(aux == "---"){
@@ -183,6 +184,8 @@ int main(){
             translated.append(d.hash_value_search(aux));
         }
     }
+
+    std::cout << translated << std::endl;
 
     decipher(translated);
 
