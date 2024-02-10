@@ -118,16 +118,16 @@ public:
     }
 };
 
-bool decipher(std::string &s, int skip){
+bool decipher(std::string &s){
     char c = '\0';
     for(size_t i=0; i<s.size(); i++){
         c = s[i];
         
         if((s[i] >= 'a' && s[i] <= 'z') && (s[i] != 20 && s[i] != 46)){
             if (c < 'd'){
-                c = 123 + (s[i]-'a') - skip;
+                c = 123 + (s[i]-'a') - 3;
             }else{
-                c = s[i] - skip;
+                c = s[i] - 3;
             }
             
             s[i] = c;
@@ -140,7 +140,6 @@ int main(){
     
     std::string artefact;
     std::string translated;
-    std::string deciphered;
     std::vector<std::string> patterns;
 
     Dict d;
@@ -195,18 +194,14 @@ int main(){
         }
     }
     
-    std::cout << translated << std::endl;
+    decipher(translated);
+    uppercase(translated);
 
-    decipher(translated, 3);
-    
-    deciphered = translated;
-
-    std::cout << deciphered << std::endl;
     //BUSCA DOS PADRÕES
     BoyerMoore b;
 
     for(std::string p:patterns){
-        b.match(deciphered, p);
+        b.match(translated, p);
     }
 }    
    
