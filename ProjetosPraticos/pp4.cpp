@@ -12,7 +12,7 @@ private:
     static const int HASH_SIZE = 26;
     int h_aux(const std::string& k){
         int hash = 0;
-        for (int i=0; i< k.size(); i++){
+        for (size_t i=0; i< k.size(); i++){
             hash += static_cast<int>(k[i])*(int)pow(TAM_ASCII, k.size() - i - 1)%HASH_SIZE;
         }
         return hash % HASH_SIZE;
@@ -70,12 +70,16 @@ public:
     }
 };
 
+void uppercase(std::string& s){
+    for(size_t i=0; i < s.size(); i++){
+        s[i] = toupper(s[i]);
+    }
+}
+
 class BoyerMoore{
 private:
-    std::string pattern;
     std::vector<int> skip_table;
-public:
-    BoyerMoore(std::string pattern):pattern(pattern){
+    void init_skip_table(std::string pattern){
         int m = pattern.size();
         skip_table.assign(256, -1);
         
@@ -83,12 +87,17 @@ public:
             skip_table[pattern[j]] = j;
         }
     }
+public:
+    BoyerMoore(){}   
 
-    int match(std::string text){
+    int match(std::string text, std::string pattern){
         int n = text.size();
         int m = pattern.size();
         int skip = 0;
 
+        init_skip_table(pattern);
+
+        std::cout << pattern << ": ";
         for(int i=0; i <=n-m; i+=skip){
             skip=0;
             for(int j = m-1; j >=0; j--){
@@ -98,31 +107,33 @@ public:
                     break;
                 }
             }
+            std::cout << skip << " ";
             if (skip == 0){
-                std::cout << i << std::endl;
+                std::cout <<"("<< i << ") ";
                 skip = 1;
-            }
-
-            return -1;
+            }            
         }
+        std::cout << std::endl;
+        return -1;
     }
 };
 
-void decipher(std::string &s){
+bool decipher(std::string &s, int skip){
     char c = '\0';
     for(size_t i=0; i<s.size(); i++){
         c = s[i];
         
         if((s[i] >= 'a' && s[i] <= 'z') && (s[i] != 20 && s[i] != 46)){
             if (c < 'd'){
-                c = 123 + (s[i]-'a') - 3;
+                c = 123 + (s[i]-'a') - skip;
             }else{
-                c = s[i] - 3;
+                c = s[i] - skip;
             }
             
             s[i] = c;
         }         
-    } 
+    }
+    return true; 
 }
 
 int main(){
@@ -134,32 +145,32 @@ int main(){
 
     Dict d;
     {
-    d.hash_insert("a", ":::");
-    d.hash_insert("b", ".::");
-    d.hash_insert("c", ":.:");
-    d.hash_insert("d", "::.");
-    d.hash_insert("e", ":..");
-    d.hash_insert("f", ".:.");
-    d.hash_insert("g", "..:");
-    d.hash_insert("h", "...");
-    d.hash_insert("i", "|::");
-    d.hash_insert("j", ":|:");
-    d.hash_insert("k", "::|");
-    d.hash_insert("l", "|.:");
-    d.hash_insert("m", ".|:");
-    d.hash_insert("n", ".:|");
-    d.hash_insert("o", "|:.");
-    d.hash_insert("p", ":|.");
-    d.hash_insert("q", ":.|");
-    d.hash_insert("r", "|..");
-    d.hash_insert("s", ".|.");
-    d.hash_insert("t", "..|");
-    d.hash_insert("u", ".||");
-    d.hash_insert("v", "|.|");
-    d.hash_insert("w", "||.");
-    d.hash_insert("x", "-.-");
-    d.hash_insert("y", ".--");
-    d.hash_insert("z", "--.");
+        d.hash_insert("a", ":::");
+        d.hash_insert("b", ".::");
+        d.hash_insert("c", ":.:");
+        d.hash_insert("d", "::.");
+        d.hash_insert("e", ":..");
+        d.hash_insert("f", ".:.");
+        d.hash_insert("g", "..:");
+        d.hash_insert("h", "...");
+        d.hash_insert("i", "|::");
+        d.hash_insert("j", ":|:");
+        d.hash_insert("k", "::|");
+        d.hash_insert("l", "|.:");
+        d.hash_insert("m", ".|:");
+        d.hash_insert("n", ".:|");
+        d.hash_insert("o", "|:.");
+        d.hash_insert("p", ":|.");
+        d.hash_insert("q", ":.|");
+        d.hash_insert("r", "|..");
+        d.hash_insert("s", ".|.");
+        d.hash_insert("t", "..|");
+        d.hash_insert("u", ".||");
+        d.hash_insert("v", "|.|");
+        d.hash_insert("w", "||.");
+        d.hash_insert("x", "-.-");
+        d.hash_insert("y", ".--");
+        d.hash_insert("z", "--.");
     }
 
     std::cin >> artefact;
@@ -168,11 +179,10 @@ int main(){
     while(true){
         std::cin >> aux;
         if(aux == "fim") break;
+        uppercase(aux);
         patterns.push_back(aux);
     }
 
-    //std::cout << artefact << std::endl;
-    //TRADUÇÃO
     for(size_t i=0; i < artefact.size(); i+=3){
         aux = "";
         aux = artefact.substr(i, 3);
@@ -184,11 +194,19 @@ int main(){
             translated.append(d.hash_value_search(aux));
         }
     }
-
+    
     std::cout << translated << std::endl;
 
-    decipher(translated);
+    decipher(translated, 3);
+    
+    deciphered = translated;
 
-    std::cout << translated << std::endl;
+    std::cout << deciphered << std::endl;
+    //BUSCA DOS PADRÕES
+    BoyerMoore b;
 
-}
+    for(std::string p:patterns){
+        b.match(deciphered, p);
+    }
+}    
+   
