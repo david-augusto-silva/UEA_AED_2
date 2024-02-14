@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <vector>
 #include <cmath>
-#include <string>
 #include <list>
 
 class Dict{
@@ -35,7 +34,7 @@ public:
                 i++;
             }
         }while(i != HASH_SIZE);
-        std::cerr << "Não há mais espaço para chaves";
+        std::cerr << "Nao ha espaco para chaves";
         return -1;
     }
 
@@ -70,11 +69,20 @@ public:
     }
 };
 
-void uppercase(std::string& s){
-    std::string u = s;
+std::string uppercase(std::string& s){
+    std::string upper = s;
     for(size_t i=0; i < s.size(); i++){
-        u[i] = toupper(s[i]);
+        upper[i] = toupper(s[i]);
     }
+    return upper;
+}
+
+std::string lowercase(std::string& s){
+    std::string lower = s;
+    for(size_t i=0; i < s.size(); i++){
+        lower[i] = tolower(s[i]);
+    }
+    return lower;
 }
 
 class BoyerMoore{
@@ -118,7 +126,7 @@ public:
 
         init_skip_table(pattern);
 
-        std::cout << pattern << ": ";
+        std::cout << uppercase(pattern) << ": ";
         for(int i=0; i <=n-m; i+=skip){
             skip=0;
             for(int j = m-1; j >=0; j--){
@@ -140,8 +148,7 @@ public:
 };
 
 std::string decipher(std::string &s, int p){
-    std::string t= s;
-
+    std::string t= lowercase(s);
 
     char c = '\0';
     for(size_t i=0; i<t.size(); i++){
@@ -155,7 +162,34 @@ std::string decipher(std::string &s, int p){
             t[i] = c;
         }         
     }
-    return t; 
+    return uppercase(t); 
+}
+
+void search_for_patterns(std::string text, std::vector<std::string> patterns){
+    BoyerMoore b;
+    std::vector<int> skips;
+
+    bool found = false;
+    int c_found = 0;
+
+    for(size_t i=0; i < patterns.size(); i++){
+        int c = 1;
+        std::string s = "";
+        while(c <= 26){
+            s = decipher(text, c);
+            found = b.match(s, patterns[i]);
+            if(found){
+                c_found = c;
+                b.match_print(s, patterns[i]);
+                break;
+            }
+            c++;
+        }   
+        if(!b.match(decipher(text, c_found), patterns[i])){
+            b.match_print(decipher(text, c_found), patterns[i]);
+        }    
+
+    }
 }
 
 int main(){
@@ -201,7 +235,7 @@ int main(){
     while(true){
         std::cin >> aux;
         if(aux == "fim" || aux == "FIM") break;
-        patterns.push_back(aux);
+        patterns.push_back(uppercase(aux));
     }
 
     for(size_t i=0; i < artefact.size(); i+=3){
@@ -216,13 +250,6 @@ int main(){
         }
     }
      
-    //BUSCA DOS PADRÕES
-    
-    deciphered = decipher(translated, 2);
-
-    BoyerMoore b;
-    for(std::string w:patterns){
-        b.match_print(deciphered, w);
-    }
+    search_for_patterns(translated, patterns);
 }    
    
