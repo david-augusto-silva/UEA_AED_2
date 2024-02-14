@@ -71,9 +71,8 @@ public:
 };
 
 void uppercase(std::string& s){
-    std::string u = s;
     for(size_t i=0; i < s.size(); i++){
-        u[i] = toupper(s[i]);
+        s[i] = toupper(s[i]);
     }
 }
 
@@ -142,7 +141,6 @@ public:
 std::string decipher(std::string &s, int p){
     std::string t= s;
 
-
     char c = '\0';
     for(size_t i=0; i<t.size(); i++){
         c = t[i];
@@ -201,6 +199,7 @@ int main(){
     while(true){
         std::cin >> aux;
         if(aux == "fim" || aux == "FIM") break;
+        
         patterns.push_back(aux);
     }
 
@@ -216,13 +215,10 @@ int main(){
         }
     }
      
-    //BUSCA DOS PADRÕES
-    
-    deciphered = decipher(translated, 2);
+    std::cout << translated << std::endl;
 
-    BoyerMoore b;
-    for(std::string w:patterns){
-        b.match_print(deciphered, w);
-    }
+    deciphered = decipher(translated, 26 % patterns.size());
+
+    std::cout << deciphered << std::endl;
 }    
    
