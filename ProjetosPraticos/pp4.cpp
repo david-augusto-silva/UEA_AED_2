@@ -4,7 +4,7 @@
 #include <cmath>
 #include <list>
 
-class Dict{
+class HashDict{
 private:
     std::vector<std::pair<std::string, std::string>> hash_table;
     static const int TAM_ASCII = 256;
@@ -20,7 +20,7 @@ private:
         return (h_aux(k) + i) % HASH_SIZE;
     }
 public:
-    Dict():hash_table(HASH_SIZE,{"", ""}){}
+    HashDict():hash_table(HASH_SIZE,{"", ""}){}
 
     int hash_insert(const std::string& key, const std::string& value){
         int i=0;
@@ -199,7 +199,7 @@ int main(){
     std::string deciphered;
     std::vector<std::string> patterns;
 
-    Dict d;
+    HashDict d;
     {
         d.hash_insert("a", ":::");
         d.hash_insert("b", ".::");
