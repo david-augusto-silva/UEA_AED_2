@@ -236,5 +236,4 @@ int main(){
     }
 
     search_for_patterns(translated, patterns);
-}    
-   
+}

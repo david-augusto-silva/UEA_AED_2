@@ -2,88 +2,57 @@
 #include <cstdlib>
 #include <vector>
 #include <cmath>
+#include <string>
 #include <list>
+
+typedef std::pair<std::string, std::string> str_pair; 
+
+std::string uppercase(std::string &);
+std::string lowercase(std::string &);
+std::string decipher(std::string &);
+void search_for_patterns(std::string , std::vector<std::string>);
 
 class HashDict{
 private:
-    std::vector<std::pair<std::string, std::string>> hash_table;
+    std::list<str_pair> *hash_table;
     static const int TAM_ASCII = 256;
     static const int HASH_SIZE = 26;
-    int h_aux(const std::string& k){
+    int H(const std::string& k){
         int hash = 0;
         for (size_t i=0; i< k.size(); i++){
             hash += static_cast<int>(k[i])*(int)pow(TAM_ASCII, k.size() - i - 1)%HASH_SIZE;
         }
         return hash % HASH_SIZE;
     }
-    int H(const std::string& k, int i){
-        return (h_aux(k) + i) % HASH_SIZE;
-    }
 public:
-    HashDict():hash_table(HASH_SIZE,{"", ""}){}
-
-    int hash_insert(const std::string& key, const std::string& value){
-        int i=0;
-        do{
-            int pos = H(key, i);
-            if (hash_table[pos].first.empty() && hash_table[pos].second.empty()){
-                hash_table[pos].first = key;
-                hash_table[pos].second = value;
-                return pos;
-            }else{
-                i++;
-            }
-        }while(i != HASH_SIZE);
-        std::cerr << "Nao ha espaco para chaves";
-        return -1;
+    HashDict(){
+        hash_table = new std::list<str_pair>[HASH_SIZE];
     }
 
-    int hash_search(const std::string& k){
-        int i=0;
-        int pos=0;
-        do{
-            pos = H(k, i);
-            if(hash_table[pos].first == k){
-                return pos;
-            }
-            i++;
-        }while((!hash_table[pos].first.empty() && !hash_table[pos].second.empty()) || i != HASH_SIZE);
-        return -1;
+    void hash_insert(const std::string& key, const std::string& value){
+        hash_table[H(key)].push_back({key, value}); 
     }
 
-    std::string hash_value_search(const std::string& value){
-        for(auto p:hash_table){
-            if(p.second == value){
-                return p.first;
+    std::string hash_search(const std::string& k){
+        for(auto it:hash_table[H(k)]){
+            if(it.first == k){
+                return it.second;
             }
         }
-        return "";
+        return " ";
     }
 
-    void show_hash(){
-        int i=0;
-        for(auto p:hash_table){
-            std::cout << i << ": " << "<" << p.first << " , " << p.second << ">" << std::endl;
-            i++;
+    void show_hash_table(){
+        for(int i=0; i < HASH_SIZE; i++){
+            std::cout << i+1 << ": ";
+            for(auto it:hash_table[i]){
+                std::cout << "(" << it.first << ", " << it.second << ")";
+            }
+            std::cout << std::endl;
         }
     }
+
 };
-
-std::string uppercase(std::string& s){
-    std::string upper = s;
-    for(size_t i=0; i < s.size(); i++){
-        upper[i] = toupper(s[i]);
-    }
-    return upper;
-}
-
-std::string lowercase(std::string& s){
-    std::string lower = s;
-    for(size_t i=0; i < s.size(); i++){
-        lower[i] = tolower(s[i]);
-    }
-    return lower;
-}
 
 class BoyerMoore{
 private:
@@ -147,6 +116,22 @@ public:
     }
 };
 
+std::string uppercase(std::string& s){
+    std::string upper = s;
+    for(size_t i=0; i < s.size(); i++){
+        upper[i] = toupper(s[i]);
+    }
+    return upper;
+}
+
+std::string lowercase(std::string& s){
+    std::string lower = s;
+    for(size_t i=0; i < s.size(); i++){
+        lower[i] = tolower(s[i]);
+    }
+    return lower;
+}
+
 std::string decipher(std::string &s, int p){
     std::string t= lowercase(s);
 
@@ -201,32 +186,32 @@ int main(){
 
     HashDict d;
     {
-        d.hash_insert("a", ":::");
-        d.hash_insert("b", ".::");
-        d.hash_insert("c", ":.:");
-        d.hash_insert("d", "::.");
-        d.hash_insert("e", ":..");
-        d.hash_insert("f", ".:.");
-        d.hash_insert("g", "..:");
-        d.hash_insert("h", "...");
-        d.hash_insert("i", "|::");
-        d.hash_insert("j", ":|:");
-        d.hash_insert("k", "::|");
-        d.hash_insert("l", "|.:");
-        d.hash_insert("m", ".|:");
-        d.hash_insert("n", ".:|");
-        d.hash_insert("o", "|:.");
-        d.hash_insert("p", ":|.");
-        d.hash_insert("q", ":.|");
-        d.hash_insert("r", "|..");
-        d.hash_insert("s", ".|.");
-        d.hash_insert("t", "..|");
-        d.hash_insert("u", ".||");
-        d.hash_insert("v", "|.|");
-        d.hash_insert("w", "||.");
-        d.hash_insert("x", "-.-");
-        d.hash_insert("y", ".--");
-        d.hash_insert("z", "--.");
+        d.hash_insert(":::", "a");
+        d.hash_insert(".::", "b");
+        d.hash_insert(":.:", "c");
+        d.hash_insert("::.", "d");
+        d.hash_insert(":..", "e");
+        d.hash_insert(".:.", "f");
+        d.hash_insert("..:", "g");
+        d.hash_insert("...", "h");
+        d.hash_insert("|::", "i");
+        d.hash_insert(":|:", "j");
+        d.hash_insert("::|", "k");
+        d.hash_insert("|.:", "l");
+        d.hash_insert(".|:", "m");
+        d.hash_insert(".:|", "n");
+        d.hash_insert("|:.", "o");
+        d.hash_insert(":|.", "p");
+        d.hash_insert(":.|", "q");
+        d.hash_insert("|..", "r");
+        d.hash_insert(".|.", "s");
+        d.hash_insert("..|", "t");
+        d.hash_insert(".||", "u");
+        d.hash_insert("|.|", "v");
+        d.hash_insert("||.", "w");
+        d.hash_insert("-.-", "x");
+        d.hash_insert(".--", "y");
+        d.hash_insert("--.", "z");
     }
 
     std::cin >> artefact;
@@ -246,10 +231,9 @@ int main(){
         }else if(aux == "~~~"){
             translated.append(".");
         }else{
-            translated.append(d.hash_value_search(aux));
+            translated.append(d.hash_search(aux));
         }
     }
-     
+
     search_for_patterns(translated, patterns);
-}    
-   
+}
